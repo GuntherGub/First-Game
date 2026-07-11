@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVD Bouncing Ball</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: black; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        const ballRadius = 25;
+
+        let ballX = canvas.width / 2;
+        let ballY = canvas.height / 2;
+        let ballSpeedX = 5;
+        let ballSpeedY = 4;
+
+        function draw() {
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            if (ballX + ballRadius >= canvas.width || ballX - ballRadius <= 0) {
+                ballSpeedX *= -1;
+            }
+
+            if (ballY + ballRadius >= canvas.height || ballY - ballRadius <= 0) {
+                ballSpeedY *= -1;
+            }
+
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#8000ff';
+            ctx.fill();
+            ctx.closePath();
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
