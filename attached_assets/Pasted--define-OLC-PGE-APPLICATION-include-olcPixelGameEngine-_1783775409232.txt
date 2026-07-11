@@ -1,0 +1,68 @@
+#define OLC_PGE_APPLICATION
+#include "olcPixelGameEngine.h"
+#include <cstdlib> // Required for rand() to generate random numbers
+
+class BouncingBallGame : public olc::PixelGameEngine {
+public:
+    BouncingBallGame() {
+        sAppName = "DVD Bouncing Ball - Color Changer";
+    }
+
+private:
+    float ballX = 400.0f;
+    float ballY = 300.0f;
+    float ballRadius = 25.0f;
+    float speedX = 300.0f; 
+    float speedY = 240.0f;
+
+    // 1. Variable to store the current color of the ball (Starts as Magenta)
+    olc::Pixel ballColor = olc::MAGENTA;
+
+    // 2. Helper function to generate a completely random color
+    olc::Pixel GetRandomColor() {
+        uint8_t r = rand() % 256; // Random Red between 0 and 255
+        uint8_t g = rand() % 256; // Random Green between 0 and 255
+        uint8_t b = rand() % 256; // Random Blue between 0 and 255
+        return olc::Pixel(r, g, b);
+    }
+
+public:
+    bool OnUserCreate() override {
+        // Seed the random number generator using the current time
+        srand(time(0)); 
+        return true;
+    }
+
+    bool OnUserUpdate(float fElapsedTime) override {
+        // Move the ball
+        ballX += speedX * fElapsedTime;
+        ballY += speedY * fElapsedTime;
+
+        // Bounce off left/right edges
+        if ((ballX + ballRadius >= ScreenWidth()) || (ballX - ballRadius <= 0)) {
+            speedX *= -1.0f;
+            ballColor = GetRandomColor(); // Change color on impact!
+        }
+        
+        // Bounce off top/bottom edges
+        if ((ballY + ballRadius >= ScreenHeight()) || (ballY - ballRadius <= 0)) {
+            speedY *= -1.0f;
+            ballColor = GetRandomColor(); // Change color on impact!
+        }
+
+        // Render Frame
+        Clear(olc::BLACK); 
+        
+        // Draw the ball using our color variable
+        FillCircle((int)ballX, (int)ballY, (int)ballRadius, ballColor);
+
+        return true; 
+    }
+};
+
+int main() {
+    BouncingBallGame game;
+    if (game.Construct(800, 600, 1, 1))
+        game.Start();
+    return 0;
+}

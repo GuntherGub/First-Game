@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DVD Bouncing Ball</title>
+    <title>DVD Bouncing Ball - Color Changer</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: black; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
@@ -28,34 +28,59 @@
 
         let ballX = canvas.width / 2;
         let ballY = canvas.height / 2;
-        let ballSpeedX = 5;
-        let ballSpeedY = 4;
 
-        function draw() {
-            ballX += ballSpeedX;
-            ballY += ballSpeedY;
+        // Speed in pixels per second (matching original: 300 and 240)
+        let speedX = 300;
+        let speedY = 240;
 
+        // Start color: magenta
+        let ballColor = '#ff00ff';
+
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        let lastTime = null;
+
+        function draw(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const elapsed = (timestamp - lastTime) / 1000; // seconds
+            lastTime = timestamp;
+
+            // Move ball using delta time (same as fElapsedTime in original)
+            ballX += speedX * elapsed;
+            ballY += speedY * elapsed;
+
+            // Bounce off left/right edges + change color
             if (ballX + ballRadius >= canvas.width || ballX - ballRadius <= 0) {
-                ballSpeedX *= -1;
+                speedX *= -1;
+                ballColor = getRandomColor();
             }
 
+            // Bounce off top/bottom edges + change color
             if (ballY + ballRadius >= canvas.height || ballY - ballRadius <= 0) {
-                ballSpeedY *= -1;
+                speedY *= -1;
+                ballColor = getRandomColor();
             }
 
+            // Clear screen
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Draw ball
             ctx.beginPath();
             ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = '#8000ff';
+            ctx.fillStyle = ballColor;
             ctx.fill();
             ctx.closePath();
 
             requestAnimationFrame(draw);
         }
 
-        draw();
+        requestAnimationFrame(draw);
     </script>
 </body>
 </html>
